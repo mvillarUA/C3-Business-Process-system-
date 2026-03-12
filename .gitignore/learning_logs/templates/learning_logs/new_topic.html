@@ -1,0 +1,14 @@
+{% extends "learning_logs/base.html" %}
+{% block content %}
+<p>Add a new topic:</p>
+<form action="{% url 'C3 DUS System':new_topic' %}" method='post'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" name="submit">Add topic</button>
+</form>
+
+<div class="alert alert-primary" role="alert">
+This page is styled using Bootstrap!
+</div>
+
+{% endblock content %}
