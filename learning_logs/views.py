@@ -3,10 +3,10 @@ from django.contrib.auth.decorators import login_required
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
 
-@login_required
 # Create your views here.
+
+@login_required
 def index(request):
-    """The home page for Learning Log."""
     return render(request, 'learning_logs/index.html')
 
 @login_required
@@ -92,3 +92,17 @@ def new_topic(request):
     # Display blank or invalid form
     context = {'form': form}
     return render(request, 'learning_logs/new_topic.html', context)
+
+@login_required
+def claims(request):
+    return render(request, "learning_logs/claims.html")
+
+
+@login_required
+def sales(request):
+    return render(request, "learning_logs/sales.html")
+
+
+@login_required
+def inventory(request):
+    return render(request, "learning_logs/inventory.html")
