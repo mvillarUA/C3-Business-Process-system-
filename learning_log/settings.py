@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
     #My Apps
     'learning_logs',
+    'users',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -120,6 +121,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-LOGIN_URL = '/accounts/login/'
+
+LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = 'learning_logs:index'
+LOGOUT_REDIRECT_URL = 'users:login'

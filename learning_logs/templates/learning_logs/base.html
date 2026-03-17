@@ -20,10 +20,28 @@
                         <span class="font-medium">ABC Motors</span>
                     </div>
 
-                    <div class="flex items-center gap-2 text-slate-600">
-                        <span>👤</span>
-                        <span class="font-medium">{{ request.user.username|default:"Manager" }}</span>
-                    </div>
+                    {% if user.is_authenticated %}
+                        <div class="flex items-center gap-2 text-slate-600">
+                            <span>👤</span>
+                            <span class="font-medium">{{ user.username }}</span>
+                        </div>
+                        <form action="{% url 'users:logout' %}" method="post" class="m-0 inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="text-sm text-gray-600 hover:text-gray-900 bg-transparent border-none p-0">
+                                    Log out
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'users:register' %}" class="text-sm text-gray-600">
+                            Register
+                        </a>
+                        <a href="{% url 'users:login' %}" class="text-sm text-gray-600">
+                            Log in
+                        </a>
+                        
+                        
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -33,10 +51,6 @@
         {% block content %}
         {% endblock content %}
     </main>
-
-<a href="{% url 'logout' %}" class="text-sm text-gray-600">
-    Logout
-</a>
 
 </body>
 </html>
