@@ -1,0 +1,86 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'learning_logs:sales' %}"
+       class="text-blue-600 hover:underline">
+        ← Back to Sales Portal
+    </a>
+</div>
+
+<h2 class="text-xl font-semibold mb-6">Sales / Policies</h2>
+
+<div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="bg-white p-4 rounded shadow text-center">
+        <p class="text-grey-500 text-sm">Total Policies</p>
+        <p class="text-2xl font-bold">{{ total }}</p>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow text-center">
+        <span class="bg-green-100 text-green-700 px-2 py-1 rounded">Active</span>
+        <p class="text-2xl font-bold">{{ active }}</p>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow text-center">
+        <span class="bg-red-100 text-red-700 px-2 py-1 rounded">Expired</span>
+        <p class="text-2xl font-bold">{{ expired }}</p>
+    </div>
+</div>
+
+<p class="text-sm text-gray-500 mb-2">
+    This chart shows the distribution of policies by coverage type.
+</p>
+
+<div class="bg-white border rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="text-lg font-semibold mb-9">Coverage Distribution</h3>
+    <img src="data:image/png;base64,{{ image_base64 }}"
+         alt="Coverage Type Pie Chart"
+         class="w-45 max-w-xl mx-auto">
+</div>
+
+<p class="text-sm text-gray-500 mb-2">
+    Showing {{ total }} policies
+</p>
+<div class="bg-white border rounded-xl p-6 shadow-sm">
+    <h3 class="text-lg font-semibold mb-4">Sales Transactions</h3>
+
+    <table class="min-w-full border">
+        <thead>
+            <tr class="bg-gray-100 text-left">
+                <th class="p-2">Policy ID</th>
+                <th class="p-2">Dealership</th>
+                <th class="p-2">Vehicle</th>
+                <th class="p-2">Start Date</th>
+                <th class="p-2">Status</th>
+                <th class="p-2">Coverage Type</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for policy in policies %}
+            <tr class="border-t">
+                <td class="p-2">{{ policy.policyid }}</td>
+                <td class="p-2">
+                    {{ policy.vehicleid.customerid.dealershipid.name }}
+                </td>
+                <td class="p-2">
+                    {{ policy.vehicleid.year }} {{ policy.vehicleid.model }}
+                </td>
+                <td class="p-2">{{ policy.startdate }}</td>
+                <td class="p-2">{{ policy.status }}</td>
+                <td class="p-2">{{ policy.coveragetype }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="p-2 text-center text-gray-500">
+                    No sales transactions found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+{% endblock %}

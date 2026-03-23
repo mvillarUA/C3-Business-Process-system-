@@ -1,8 +1,19 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Topic, Entry
-from .forms import TopicForm, EntryForm
+from .models import (
+    Topic, Entry, Warrantypolicy, Vehicle,
+    Customer, Dealership
+)
+from .forms import TopicForm, EntryForm, NewSaleForm
 from django.http import Http404
+from io import BytesIO
+import base64
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from collections import Counter
+from .models import InventoryItem
+
 
 # Create your views here.
 
@@ -102,5 +113,114 @@ def sales(request):
 
 
 @login_required
-def inventory(request):
-    return render(request, "learning_logs/inventory.html")
+def view_sales(request):
+    policies = Warrantypolicy.objects.all()
+
+    total = policies.count()
+    active = policies.filter(status='Active').count()
+    expired = policies.filter(status='Expired').count()
+
+    coverage_list = [p.coveragetype for p in policies if p.coveragetype]
+    coverage_counts = Counter(coverage_list)
+
+    labels = list(coverage_counts.keys())
+    sizes = list(coverage_counts.values())
+
+    fig, ax = plt.subplots()
+    ax.pie(
+    sizes,
+    labels=labels,
+    autopct=None,             
+    startangle=90,
+    colors=["#D7F2FC", "#FAF4D3", "#E5E2F7"],  
+    labeldistance=0.4          
+    )
+    ax.set_title("Policies by Coverage Type")
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', dpi=300, bbox_inches='tight')
+    image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    buffer.close()
+    plt.close()
+
+    context = {
+    'policies': policies,
+    'image_base64': image_base64,
+    'total': total,
+    'active': active,
+    'expired': expired,
+    }
+    return render(request, "learning_logs/view_sales.html", context)
+
+
+@login_required
+def new_sale(request):
+    if request.method != 'POST':
+        form = NewSaleForm()
+    else:
+        form = NewSaleForm(request.POST)
+        if form.is_valid():
+            dealership = form.cleaned_data['dealership']
+            firstname = form.cleaned_data['firstname']
+            lastname = form.cleaned_data['lastname']
+            phone = form.cleaned_data['phone']
+            email = form.cleaned_data['email']
+            address = form.cleaned_data['address']
+
+            vehicle_model = form.cleaned_data['vehicle_model']
+            year = form.cleaned_data['year']
+            mileage = form.cleaned_data['mileage']
+            vin = form.cleaned_data['vin']
+
+            startdate = form.cleaned_data['startdate']
+            enddate = form.cleaned_data['enddate']
+            status = form.cleaned_data['status']
+            coveragetype = form.cleaned_data['coveragetype']
+
+            # Generate next customer ID
+            customer_count = Customer.objects.count() + 1
+            new_customer_id = f"CUST{customer_count:03d}"
+
+            customer = Customer.objects.create(
+                customerid=new_customer_id,
+                dealershipid=dealership,
+                firstname=firstname,
+                lastname=lastname,
+                phone=phone,
+                email=email,
+                address=address,
+            )
+
+            # Generate next vehicle ID
+            next_vehicle_id = (Vehicle.objects.order_by('-vehicleid').first().vehicleid + 1) if Vehicle.objects.exists() else 1
+
+            vehicle = Vehicle.objects.create(
+                vehicleid=next_vehicle_id,
+                customerid=customer,
+                model=vehicle_model,
+                year=year,
+                mileage=mileage,
+                vin=vin,
+            )
+
+            # Generate next policy ID
+            next_policy_id = (Warrantypolicy.objects.order_by('-policyid').first().policyid + 1) if Warrantypolicy.objects.exists() else 1
+
+            Warrantypolicy.objects.create(
+                policyid=next_policy_id,
+                vehicleid=vehicle,
+                startdate=startdate,
+                enddate=enddate,
+                status=status,
+                coveragetype=coveragetype,
+            )
+
+            return redirect('learning_logs:view_sales')
+
+    return render(request, 'learning_logs/new_sale.html', {'form': form})
+
+@login_required
+def inventory_list(request):
+    items = InventoryItem.objects.all().order_by('item_name')
+    return render(request, 'learning_logs/inventory_list.html', {'items': items})
+

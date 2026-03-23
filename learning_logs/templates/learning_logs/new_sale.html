@@ -1,0 +1,68 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+
+<div class="mb-4">
+    <a href="{% url 'learning_logs:sales' %}"
+       class="text-blue-600 hover:underline">
+        ← Back to Sales Portal
+    </a>
+</div>
+
+<h2 class="text-2xl font-semibold mb-6">Add a New Sales Transaction</h2>
+
+<form action="{% url 'learning_logs:new_sale' %}" method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b bg-gray-50">
+            <h3 class="text-lg font-medium text-gray-800">Customer Information</h3>
+        </div>
+        <div class="p-6 space-y-4">
+            <div>{{ form.dealership.label_tag }} {{ form.dealership }}</div>
+            <div>{{ form.firstname.label_tag }} {{ form.firstname }}</div>
+            <div>{{ form.lastname.label_tag }} {{ form.lastname }}</div>
+            <div>{{ form.phone.label_tag }} {{ form.phone }}</div>
+            <div>{{ form.email.label_tag }} {{ form.email }}</div>
+            <div>{{ form.address.label_tag }} {{ form.address }}</div>
+        </div>
+    </div>
+
+    <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b bg-gray-50">
+            <h3 class="text-lg font-medium text-gray-800">Vehicle Information</h3>
+        </div>
+        <div class="p-6 space-y-4">
+            <div>{{ form.vehicle_model.label_tag }} {{ form.vehicle_model }}</div>
+            <div>{{ form.year.label_tag }} {{ form.year }}</div>
+            <div>{{ form.mileage.label_tag }} {{ form.mileage }}</div>
+            <div>{{ form.vin.label_tag }} {{ form.vin }}</div>
+        </div>
+    </div>
+
+    <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b bg-gray-50">
+            <h3 class="text-lg font-medium text-gray-800">Policy Information</h3>
+        </div>
+        <div class="p-6 space-y-4">
+            <div>{{ form.startdate.label_tag }} {{ form.startdate }}</div>
+            <div>{{ form.enddate.label_tag }} {{ form.enddate }}</div>
+            <div>{{ form.status.label_tag }} {{ form.status }}</div>
+            <div>{{ form.coveragetype.label_tag }} {{ form.coveragetype }}</div>
+        </div>
+    </div>
+
+    <div class="flex gap-3">
+        <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
+            Save Transaction
+        </button>
+
+        <a href="{% url 'learning_logs:sales' %}"
+           class="bg-gray-200 text-gray-800 px-5 py-2 rounded hover:bg-gray-300">
+            Cancel
+        </a>
+    </div>
+</form>
+
+{% endblock %}
