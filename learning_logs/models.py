@@ -102,23 +102,25 @@ class Warrantypolicy(models.Model):
     class Meta:
         managed = False
         db_table = 'WarrantyPolicy'
+        
 
-class InventoryItem(models.Model):
-   item_name = models.CharField(max_length=100)
-   sku = models.CharField(max_length=50, unique=True)
-   quantity = models.PositiveIntegerField(default=0)
-   reorder_level = models.PositiveIntegerField(default=5)
-   description = models.TextField(blank=True)
-   created_at = models.DateTimeField(auto_now_add=True)
+class Inventory(models.Model):
+    partid = models.IntegerField(db_column='partID', primary_key=True)
+    partname = models.TextField(db_column='partName', blank=True, null=True)
+    quantity = models.FloatField(blank=True, null=True)
+    cost = models.FloatField(blank=True, null=True)
 
+    class Meta:
+        managed = False
+        db_table = 'Inventory'
 
-   def stock_status(self):
-       if self.quantity == 0:
-           return "Out"
-       elif self.quantity <= self.reorder_level:
-           return "Low"
-       return "Available"
+    def stock_status(self):
+        qty = self.quantity or 0
+        if qty == 0:
+            return "Out"
+        elif qty <= 5:
+            return "Low"
+        return "Available"
 
-
-   def __str__(self):
-       return f"{self.item_name} ({self.sku})"
+    def __str__(self):
+        return self.partname or f"Part {self.partid}"

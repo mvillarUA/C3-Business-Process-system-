@@ -12,14 +12,23 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from collections import Counter
-from .models import InventoryItem
-
-
+from .models import Inventory
+available_count = Inventory.objects.filter(quantity__gt=5).count()
+low_count = Inventory.objects.filter(quantity__lte=5, quantity__gt=0).count()
+out_count = Inventory.objects.filter(quantity=0).count()
 # Create your views here.
 
 @login_required
 def index(request):
-    return render(request, 'learning_logs/index.html')
+    low_inventory_alerts = Inventory.objects.filter(quantity__lte=5).count()
+    recent_policies_created = Warrantypolicy.objects.count()
+
+    context = {
+        "low_inventory_alerts": low_inventory_alerts,
+        "recent_policies_created": recent_policies_created,
+    }
+
+    return render(request, 'learning_logs/index.html', context)
 
 @login_required
 def topics(request):
@@ -132,8 +141,8 @@ def view_sales(request):
     labels=labels,
     autopct=None,             
     startangle=90,
-    colors=["#D7F2FC", "#FAF4D3", "#E5E2F7"],  
-    labeldistance=0.4          
+    colors=["#D7F2FC", "#FAF4D3", "#E5E2F7"],
+    labeldistance=0.4         
     )
     ax.set_title("Policies by Coverage Type")
 
@@ -221,6 +230,82 @@ def new_sale(request):
 
 @login_required
 def inventory_list(request):
-    items = InventoryItem.objects.all().order_by('item_name')
-    return render(request, 'learning_logs/inventory_list.html', {'items': items})
+    items = Inventory.objects.all().order_by('partname')
 
+    total_items = items.count()
+    low_stock = items.filter(quantity__lte=5, quantity__gt=0).count()
+    out_of_stock = items.filter(quantity=0).count()
+    available = items.filter(quantity__gt=5).count()
+
+    labels = []
+    sizes = []
+    colors = []
+
+    # Available
+    if available_count > 0:
+        labels.append('Available')
+        sizes.append(available_count)
+        colors.append('#4CAF50')  
+
+    # Low
+    if low_count > 0:
+        labels.append('Low')
+        sizes.append(low_count)
+        colors.append('#FFC107')  
+
+    # Out（可选）
+    if out_count > 0:
+        labels.append('Out')
+        sizes.append(out_count)
+        colors.append('#F44336')  
+
+
+    fig, ax = plt.subplots(figsize=(5, 5))
+
+    ax.pie(
+        sizes,
+        labels=labels,
+        autopct='%1.0f%%',
+        startangle=140,
+        colors=colors,
+        wedgeprops={'edgecolor': 'white'},
+        textprops={'fontsize': 10}
+    )
+
+    ax.set_title("Inventory Status", fontsize=14, weight='bold')
+
+    plt.tight_layout()
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', dpi=300, bbox_inches='tight')
+    image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    buffer.close()
+    plt.close()
+
+    context = {
+        'items': items,
+        'total_items': total_items,
+        'low_stock': low_stock,
+        'out_of_stock': out_of_stock,
+        'available': available,
+        'image_base64': image_base64,
+    }
+
+    return render(request, 'learning_logs/inventory_list.html', context)
+
+@login_required
+def new_inventory(request):
+    if request.method == 'POST':
+        partname = request.POST.get('partname')
+        quantity = request.POST.get('quantity')
+        cost = request.POST.get('cost')
+
+        Inventory.objects.create(
+            partname=partname,
+            quantity=quantity or 0,
+            cost=cost or 0,
+        )
+
+        return redirect('learning_logs:inventory_list')
+
+    return render(request, 'learning_logs/new_inventory.html')

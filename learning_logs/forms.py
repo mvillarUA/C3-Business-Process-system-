@@ -1,5 +1,5 @@
 from django import forms
-from .models import Topic, Entry, Dealership, InventoryItem
+from .models import Topic, Entry, Dealership, Inventory
 
 class TopicForm(forms.ModelForm):
     class Meta:
@@ -133,33 +133,3 @@ class NewSaleForm(forms.Form):
         'class': 'w-full rounded border border-gray-300 bg-gray-50 px-3 py-2'
     })
     )
-
-class InventoryItemForm(forms.ModelForm):
-   class Meta:
-       model = InventoryItem
-       fields = ['item_name', 'sku', 'quantity', 'reorder_level', 'description']
-       labels = {
-           'item_name': 'Item Name',
-           'sku': 'SKU',
-           'quantity': 'Quantity',
-           'reorder_level': 'Reorder Level',
-           'description': 'Description',
-       }
-       widgets = {
-           'item_name': forms.TextInput(attrs={
-               'class': 'w-full rounded border border-gray-300 bg-gray-50 px-3 py-2'
-           }),
-           'sku': forms.TextInput(attrs={
-               'class': 'w-full rounded border border-gray-300 bg-gray-50 px-3 py-2'
-           }),
-           'quantity': forms.NumberInput(attrs={
-               'class': 'w-full rounded border border-gray-300 bg-gray-50 px-3 py-2'
-           }),
-           'reorder_level': forms.NumberInput(attrs={
-               'class': 'w-full rounded border border-gray-300 bg-gray-50 px-3 py-2'
-           }),
-           'description': forms.Textarea(attrs={
-               'class': 'w-full rounded border border-gray-300 bg-gray-50 px-3 py-2',
-               'rows': 4
-           }),
-       }

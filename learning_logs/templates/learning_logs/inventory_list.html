@@ -2,15 +2,99 @@
 
 {% block content %}
 
-<a href="{% url 'learning_logs:sales' %}" 
-   class="inline-block mb-4 text-blue-600 hover:underline">
-   ← Back
-</a>
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-slate-900">Inventory Management</h2>
+    <p class="text-slate-500 mt-1">Track and manage inventory items.</p>
+</div>
 
-<div class="max-w-6xl mx-auto mt-8 px-4">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">Check Inventory</h2>
-        
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <p class="text-sm text-slate-500">Total Items</p>
+        <p class="text-3xl font-bold text-slate-900 mt-2">{{ total_items }}</p>
     </div>
 
-{% endblock content %}
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <p class="text-sm text-slate-500">Available</p>
+        <p class="text-3xl font-bold text-green-600 mt-2">{{ available }}</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <p class="text-sm text-slate-500">Low Stock</p>
+        <p class="text-3xl font-bold text-yellow-600 mt-2">{{ low_stock }}</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <p class="text-sm text-slate-500">Out of Stock</p>
+        <p class="text-3xl font-bold text-red-600 mt-2">{{ out_of_stock }}</p>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
+    <h3 class="text-lg font-semibold text-slate-900 mb-4">Inventory Chart</h3>
+    <img src="data:image/png;base64,{{ image_base64 }}" alt="Inventory Chart" class="max-w-full h-auto">
+</div>
+
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center p-6 border-b border-slate-200">
+        <h3 class="text-lg font-semibold text-slate-900">Inventory List</h3>
+
+        <a href="{% url 'learning_logs:new_inventory' %}"
+           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            + Add Item
+        </a>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Part Name</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Part ID</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Quantity</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Cost</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in items %}
+                <tr class="border-t border-slate-200 hover:bg-slate-50">
+                    <td class="px-6 py-4 text-sm">{{ item.partname }}</td>
+                    <td class="px-6 py-4 text-sm">{{ item.partid }}</td>
+                    <td class="px-6 py-4 text-sm">{{ item.quantity|floatformat:0 }}</td>
+                    <td class="px-6 py-4 text-sm">${{ item.cost|floatformat:2 }}</td>
+
+                    <td class="px-6 py-4 text-sm">
+                        {% if item.stock_status == "Out" %}
+                            <span class="text-red-600 font-medium">Out</span>
+                        {% elif item.stock_status == "Low" %}
+                            <span class="text-yellow-600 font-medium">Low</span>
+                        {% else %}
+                            <span class="text-green-600 font-medium">Available</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-6 text-slate-400">
+                        No inventory items found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div class="mt-8">
+    <a href="{% url 'learning_logs:index' %}"
+       class="bg-gray-200 px-5 py-3 rounded hover:bg-gray-300">
+        Back to Dashboard
+    </a>
+</div>
+
+{% endblock %}
