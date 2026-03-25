@@ -260,7 +260,7 @@ def inventory_list(request):
         colors.append('#F44336')  
 
 
-    fig, ax = plt.subplots(figsize=(5, 5))
+    fig, ax = plt.subplots(figsize=(3, 3))
 
     ax.pie(
         sizes,
@@ -269,10 +269,10 @@ def inventory_list(request):
         startangle=90,
         colors=colors,
         wedgeprops={'edgecolor': 'white'},
-        textprops={'fontsize': 10}
+        textprops={'fontsize': 8}
     )
 
-    ax.set_title("Inventory Status", fontsize=14, weight='bold')
+    ax.set_title("Inventory Status", fontsize=10, weight='bold')
 
     plt.tight_layout()
 
