@@ -245,7 +245,7 @@ def inventory_list(request):
     if available_count > 0:
         labels.append('Available')
         sizes.append(available_count)
-        colors.append('#4CAF50')  
+        colors.append('#4CAF50')
 
     # Low
     if low_count > 0:
@@ -253,7 +253,7 @@ def inventory_list(request):
         sizes.append(low_count)
         colors.append('#FFC107')  
 
-    # Out（可选）
+    # Out
     if out_count > 0:
         labels.append('Out')
         sizes.append(out_count)
