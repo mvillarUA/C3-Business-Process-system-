@@ -233,9 +233,9 @@ def inventory_list(request):
     items = Inventory.objects.all().order_by('partname')
 
     total_items = items.count()
-    low_stock = items.filter(quantity__lte=5, quantity__gt=0).count()
-    out_of_stock = items.filter(quantity=0).count()
-    available = items.filter(quantity__gt=5).count()
+    low_count = items.filter(quantity__lte=5, quantity__gt=0).count()
+    out_count = items.filter(quantity=0).count()
+    available_count = items.filter(quantity__gt=5).count()
 
     labels = []
     sizes = []
@@ -266,7 +266,7 @@ def inventory_list(request):
         sizes,
         labels=labels,
         autopct='%1.0f%%',
-        startangle=140,
+        startangle=90,
         colors=colors,
         wedgeprops={'edgecolor': 'white'},
         textprops={'fontsize': 10}
@@ -285,9 +285,9 @@ def inventory_list(request):
     context = {
         'items': items,
         'total_items': total_items,
-        'low_stock': low_stock,
-        'out_of_stock': out_of_stock,
-        'available': available,
+        'low_stock': low_count,
+        'out_of_stock': out_count,
+        'available': available_count,
         'image_base64': image_base64,
     }
 
