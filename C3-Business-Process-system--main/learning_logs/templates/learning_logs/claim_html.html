@@ -1,0 +1,71 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto">
+
+    <h2 class="text-2xl font-semibold mb-6">Claim Review</h2>
+
+    <div class="bg-white shadow-md rounded-xl p-6">
+
+        <!-- Claim Info -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+
+            <div>
+                <p class="text-gray-500 text-sm">Policy Number</p>
+                <p class="font-semibold">{{ claim.policy_number }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">VIN</p>
+                <p class="font-semibold">{{ claim.vin }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">Claim Amount</p>
+                <p class="font-semibold">${{ claim.claim_amount }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">Claim Level</p>
+                <p class="font-semibold">{{ claim.get_claim_level_display }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">Status</p>
+                <p class="font-semibold">{{ claim.status }}</p>
+            </div>
+
+        </div>
+
+        <!-- Description -->
+        <div class="mb-6">
+            <p class="text-gray-500 text-sm">Description</p>
+            <p class="mt-1">{{ claim.description }}</p>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex space-x-4">
+
+            <a href="{% url 'learning_logs:update_claim_status' claim.id 'APPROVED' %}"
+               class="bg-green-600 text-white px-4 py-2 rounded-lg">
+               Approve
+            </a>
+
+            <a href="{% url 'learning_logs:update_claim_status' claim.id 'REJECTED' %}"
+               class="bg-red-600 text-white px-4 py-2 rounded-lg">
+               Reject
+            </a>
+
+            <a href="{% url 'learning_logs:update_claim_status' claim.id 'MORE_INFO' %}"
+               class="bg-yellow-500 text-white px-4 py-2 rounded-lg">
+               Request Info
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

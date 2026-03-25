@@ -1,0 +1,99 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh; background-color: #f9fafb;">
+    <div style="width: 100%; max-width: 520px; padding: 0 24px;">
+        <div class="bg-white shadow-lg p-4 p-md-5" style="border-radius: 16px;">
+
+            <!-- C3 Logo -->
+            <div class="d-flex justify-content-center mb-4">
+                <div class="d-flex align-items-center justify-content-center"
+                     style="width: 64px; height: 64px; background-color: #1F3A8A; border-radius: 12px;">
+                    <span style="color: white; font-size: 28px; font-weight: bold;">C3</span>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-center mb-2 fw-bold" style="color: #111827;">C3 Portal</h1>
+            <p class="text-center text-muted mb-4">
+                Automotive Warranty Management System
+            </p>
+
+            <!-- Error Message -->
+            {% if form.errors %}
+                <div class="mb-4 p-3" style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 12px;">
+                    <p class="mb-0" style="color: #dc2626; font-size: 14px;">
+                        Invalid username or password. Please try again.
+                    </p>
+                </div>
+            {% endif %}
+
+            <!-- Login Form -->
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_username" class="form-label" style="color: #374151;">
+                        Email / Username
+                    </label>
+                    <input
+                        id="id_username"
+                        name="username"
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter your email or username"
+                        required
+                        style="padding: 12px 16px; border-radius: 12px;"
+                    >
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_password" class="form-label" style="color: #374151;">
+                        Password
+                    </label>
+                    <input
+                        id="id_password"
+                        name="password"
+                        type="password"
+                        class="form-control"
+                        placeholder="Enter your password"
+                        required
+                        style="padding: 12px 16px; border-radius: 12px;"
+                    >
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="remember">
+                        <label class="form-check-label text-muted" for="remember" style="font-size: 14px;">
+                            Remember Me
+                        </label>
+                    </div>
+
+                    <a href="#" style="font-size: 14px; color: #1F3A8A; text-decoration: none;">
+                        Forgot Password?
+                    </a>
+                </div>
+
+                <div class="d-grid">
+                    <button
+                        type="submit"
+                        class="btn text-white"
+                        style="background-color: #1F3A8A; padding: 12px; border-radius: 12px;"
+                    >
+                        Sign In
+                    </button>
+                </div>
+            </form>
+
+            <!-- Help Text -->
+            <p class="text-center mt-4 mb-0 text-muted" style="font-size: 14px;">
+                Need help?
+                <span style="color: #1F3A8A;">Contact C3 Support</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

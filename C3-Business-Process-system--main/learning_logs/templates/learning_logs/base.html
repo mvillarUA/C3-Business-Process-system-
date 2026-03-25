@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Digital Unified System (DUS)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+
+    <header class="bg-white border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-20">
+                <h1 class="text-2xl font-bold tracking-tight">C3 Dealer Portal</h1>
+
+                <div class="flex items-center gap-8 text-sm">
+                    <div class="flex items-center gap-2 text-slate-600">
+                        <span>🏢</span>
+                        <span class="font-medium">ABC Motors</span>
+                    </div>
+                    <a href="{% url 'learning_logs:claims' %}" class="mr-4 text-gray-700 hover:text-blue-600">
+                            Claims
+                        </a>
+                    {% if user.is_authenticated %}
+                        <div class="flex items-center gap-2 text-slate-600">
+                            <span>👤</span>
+                            <span class="font-medium">{{ user.username }}</span>
+                        </div>
+                        <form action="{% url 'users:logout' %}" method="post" class="m-0 inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="text-sm text-gray-600 hover:text-gray-900 bg-transparent border-none p-0">
+                                    Log out
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'users:register' %}" class="text-sm text-gray-600">
+                            Register
+                        </a>
+                        <a href="{% url 'users:login' %}" class="text-sm text-gray-600">
+                            Log in
+                        </a>
+                        
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10">
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+</body>
+</html>
