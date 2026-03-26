@@ -259,8 +259,8 @@ def inventory_list(request):
         sizes.append(out_count)
         colors.append('#F44336')  
 
-
-    fig, ax = plt.subplots(figsize=(3, 3))
+    # ===== Pie Chart =====
+    fig, ax = plt.subplots(figsize=(4.2, 4.2))
 
     ax.pie(
         sizes,
@@ -272,7 +272,7 @@ def inventory_list(request):
         textprops={'fontsize': 8}
     )
 
-    ax.set_title("Inventory Status", fontsize=10, weight='bold')
+    ax.set_title("Inventory Status", fontsize=12, weight='bold')
 
     plt.tight_layout()
 
@@ -282,6 +282,27 @@ def inventory_list(request):
     buffer.close()
     plt.close()
 
+    # ===== Bar Chart =====
+    fig2, ax2 = plt.subplots(figsize=(5, 4))
+
+    categories = ['Available', 'Low', 'Out']
+    values = [available_count, low_count, out_count]
+
+    colors_bar = ['#4CAF50', '#FFC107', '#F44336']
+
+    ax2.bar(categories, values, color=colors_bar)
+
+    ax2.set_title("Inventory Count", fontsize=14, weight='bold')
+    ax2.set_ylabel("Items")
+
+    plt.tight_layout()
+
+    buffer2 = BytesIO()
+    plt.savefig(buffer2, format='png', dpi=300, bbox_inches='tight')
+    bar_chart_base64 = base64.b64encode(buffer2.getvalue()).decode('utf-8')
+    buffer2.close()
+    plt.close()
+
     context = {
         'items': items,
         'total_items': total_items,
@@ -289,6 +310,7 @@ def inventory_list(request):
         'out_of_stock': out_count,
         'available': available_count,
         'image_base64': image_base64,
+        'bar_chart': bar_chart_base64,
     }
 
     return render(request, 'learning_logs/inventory_list.html', context)

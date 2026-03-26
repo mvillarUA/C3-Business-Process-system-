@@ -29,9 +29,22 @@
     </div>
 </div>
 
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
-    <h3 class="text-lg font-semibold text-slate-900 mb-4">Inventory Chart</h3>
-    <img src="data:image/png;base64,{{ image_base64 }}" alt="Inventory Chart" class="max-w-full h-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 min-h-[420px] flex flex-col">
+        <h2 class="text-xl font-semibold text-slate-900 mb-4">Inventory Status</h2>
+        <div class="flex-1 flex items-center justify-center">
+            <img src="data:image/png;base64,{{ image_base64 }}" class="max-w-[90%] h-auto">
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 min-h-[420px] flex flex-col">
+        <h2 class="text-xl font-semibold text-slate-900 mb-4">Inventory Count</h2>
+        <div class="flex-1 flex items-center justify-center">
+            <img src="data:image/png;base64,{{ bar_chart }}" class="max-w-[88%] h-auto">
+        </div>
+    </div>
+
 </div>
 
 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
