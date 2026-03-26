@@ -44,12 +44,12 @@
                 </div>
 
                 <!-- Dealership -->
-                <div class="grid grid-cols-2 gap-4">
+                <div>
                     <label class="block text-sm font-medium">
                         Dealership <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="title"
-                        class="w-full border rounded-lg px-3 py-2 mt-1">
+                        class="w-full border rounded-lg px-3 py-2 mt-1 focus:ring focus:ring-blue-200">
                 </div>
                 
                 <!-- Claim Amount -->
@@ -74,12 +74,21 @@
 
             </div>
 
-            <!-- Next Button -->
-            <div class="mt-6">
-                <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                    Next
-                </button>
-            </div>
+            <div class="mt-6 flex space-x-4">
+
+            <!-- Save Draft -->
+            <button type="submit" name="action" value="draft"
+                class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600">
+                Save Draft
+            </button>
+
+            <!-- Next -->
+            <button type="submit" name="action" value="next"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                Next
+            </button>
+
+</div>
 
         </form>
     </div>

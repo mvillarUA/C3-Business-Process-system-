@@ -31,17 +31,17 @@ def topic(request, topic_id):
 def new_topic(request):
     """Add a new topic."""
     if request.method != 'POST':
-        # No data submitted; create a blank form.
+        
         form = TopicForm()
     else:
-        # POST data submitted; process data.
+        
         form = TopicForm(data=request.POST)
         if form.is_valid():
             new_topic = form.save(commit=False)
             new_topic.owner = request.user
             new_topic.save()
             return redirect('learning_logs:topics')
-        # Display blank or invalid form
+        
     context = {'form': form}
     return render(request, 'learning_logs/new_topic.html', context)
 
@@ -51,10 +51,10 @@ def new_entry(request, topic_id):
     topic = Topic.objects.get(id=topic_id)
 
     if request.method != 'POST':
-        # No data submitted; create a blank form.
+        
         form = EntryForm()
     else:
-        # POST data submitted; process data.
+        
         form = EntryForm(data=request.POST)
         if form.is_valid():
             new_entry = form.save(commit=False)
@@ -62,7 +62,7 @@ def new_entry(request, topic_id):
             new_entry.save()
             return redirect('learning_logs:topic', topic_id=topic_id)
 
-    # Display a blank or invalid form.
+    
     context = {'topic': topic, 'form': form}
     return render(request, 'learning_logs/new_entry.html', context)
 
@@ -76,10 +76,10 @@ def edit_entry(request, entry_id):
         raise Http404
 
     if request.method != 'POST':
-        # Initial request; pre-fill form with the current entry.
+        
         form = EntryForm(instance=entry)
     else:
-        # POST data submitted; process data.
+        
         form = EntryForm(instance=entry, data=request.POST)
         if form.is_valid():
             new_entry = form.save(commit=False)
@@ -96,20 +96,36 @@ def claims(request):
     claims = Claim.objects.all().order_by('-date_created')
     return render(request, "learning_logs/claims.html", {'claims': claims})
 
+
 @login_required
 def new_claim(request):
     if request.method == 'POST':
         form = ClaimForm(request.POST)
 
         if form.is_valid():
-            # request.session['claim_data'] = form.cleaned_data
+            action = request.POST.get('action')
             data = form.cleaned_data
-            data['claim_amount'] = float(data['claim_amount'])
-            request.session['claim_data'] = data
-            return redirect('learning_logs:upload_documents')
+
+            if action == 'draft':
+                Claim.objects.create(
+                    policy_number=data['policy_number'],
+                    vin=data['vin'],
+                    claim_amount=data['claim_amount'],
+                    description=data.get('description', ''),
+                    title=data.get('title', ''),
+                    status='DRAFT'
+                )
+
+                return redirect('learning_logs:claims')
+
+            elif action == 'next':
+                data['claim_amount'] = float(data['claim_amount'])
+                request.session['claim_data'] = data
+
+                return redirect('learning_logs:upload_documents')
+
     else:
         form = ClaimForm()
-        print("Claim Details Must be Valid")
 
     return render(request, 'learning_logs/new_claim.html', {'form': form})
 
