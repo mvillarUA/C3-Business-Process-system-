@@ -133,10 +133,9 @@ class Claim(models.Model):
     ]
 
     STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('APPROVED', 'Approved'),
-        ('REJECTED', 'Rejected'),
-        ('MORE_INFO', 'More Info Required'),
+    ('Pending', 'Pending'),
+    ('Approved', 'Approved'),
+    ('Denied', 'Denied'),
     ]
 
     title = models.CharField(max_length=200)

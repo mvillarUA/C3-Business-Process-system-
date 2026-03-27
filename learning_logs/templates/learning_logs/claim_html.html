@@ -8,60 +8,55 @@
 
     <div class="bg-white shadow-md rounded-xl p-6">
 
-        <!-- Claim Info -->
         <div class="grid grid-cols-2 gap-4 mb-6">
 
             <div>
-                <p class="text-gray-500 text-sm">Policy Number</p>
-                <p class="font-semibold">{{ claim.policy_number }}</p>
+                <p class="text-gray-500 text-sm">Claim ID</p>
+                <p class="font-semibold">{{ claim.claimid }}</p>
             </div>
 
             <div>
-                <p class="text-gray-500 text-sm">VIN</p>
-                <p class="font-semibold">{{ claim.vin }}</p>
+                <p class="text-gray-500 text-sm">Vehicle ID</p>
+                <p class="font-semibold">{{ claim.vehicleid }}</p>
             </div>
 
             <div>
                 <p class="text-gray-500 text-sm">Claim Amount</p>
-                <p class="font-semibold">${{ claim.claim_amount }}</p>
-            </div>
-
-            <div>
-                <p class="text-gray-500 text-sm">Claim Level</p>
-                <p class="font-semibold">{{ claim.get_claim_level_display }}</p>
+                <p class="font-semibold">${{ claim.claimamount|floatformat:2 }}</p>
             </div>
 
             <div>
                 <p class="text-gray-500 text-sm">Status</p>
-                <p class="font-semibold">{{ claim.status }}</p>
+                <p class="font-semibold">{{ claim.claimstatus }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">Claim Date</p>
+                <p class="font-semibold">{{ claim.claimdate }}</p>
             </div>
 
         </div>
 
-        <!-- Description -->
         <div class="mb-6">
             <p class="text-gray-500 text-sm">Description</p>
             <p class="mt-1">{{ claim.description }}</p>
         </div>
 
-        <!-- ACTION BUTTONS -->
         <div class="flex space-x-4">
-
-            <a href="{% url 'learning_logs:update_claim_status' claim.id 'APPROVED' %}"
+            <a href="{% url 'learning_logs:update_claim_status' claim.claimid 'approve' %}"
                class="bg-green-600 text-white px-4 py-2 rounded-lg">
                Approve
             </a>
 
-            <a href="{% url 'learning_logs:update_claim_status' claim.id 'REJECTED' %}"
+            <a href="{% url 'learning_logs:update_claim_status' claim.claimid 'reject' %}"
                class="bg-red-600 text-white px-4 py-2 rounded-lg">
                Reject
             </a>
 
-            <a href="{% url 'learning_logs:update_claim_status' claim.id 'MORE_INFO' %}"
+            <a href="{% url 'learning_logs:update_claim_status' claim.claimid 'request_info' %}"
                class="bg-yellow-500 text-white px-4 py-2 rounded-lg">
                Request Info
             </a>
-
         </div>
 
     </div>

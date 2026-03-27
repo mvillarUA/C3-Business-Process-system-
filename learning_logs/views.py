@@ -6,7 +6,7 @@ from .models import (
 )
 from .forms import TopicForm, EntryForm, NewSaleForm, ClaimForm
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from io import BytesIO
 import base64
 import matplotlib
@@ -18,6 +18,8 @@ available_count = Inventory.objects.filter(quantity__gt=5).count()
 low_count = Inventory.objects.filter(quantity__lte=5, quantity__gt=0).count()
 out_count = Inventory.objects.filter(quantity=0).count()
 from .models import ClaimRecord
+from datetime import date
+from django.contrib import messages
 # Create your views here.
 
 @login_required
@@ -117,7 +119,7 @@ def edit_entry(request, entry_id):
 
 @login_required
 def claims(request):
-    claims = Claim.objects.all() 
+    claims = ClaimRecord.objects.all().order_by('claimid')
 
     return render(request, 'learning_logs/claims.html', {
         'claims': claims
@@ -348,59 +350,73 @@ def new_inventory(request):
 
 @login_required
 def new_claim(request):
-    if request.method == 'POST':
-        form = ClaimForm(request.POST)
+    if request.method == "POST":
+        vehicleid = request.POST.get("vehicleid")
+        claimamount = request.POST.get("claimamount")
+        description = request.POST.get("description")
 
-        if form.is_valid():
-            action = request.POST.get('action')
-            data = form.cleaned_data
+        if not Vehicle.objects.filter(vehicleid=vehicleid).exists():
+            return render(request, 'learning_logs/new_claim.html', {
+                'error_message': f"Vehicle ID {vehicleid} does not exist."
+            })
 
-            if action == 'draft':
-                Claim.objects.create(
-                    policy_number=data['policy_number'],
-                    vin=data['vin'],
-                    claim_amount=data['claim_amount'],
-                    description=data.get('description', ''),
-                    title=data.get('title', ''),
-                    status='DRAFT'
-                )
+        last_claim = ClaimRecord.objects.order_by('-claimid').first()
+        new_id = 1 if last_claim is None else last_claim.claimid + 1
 
-                return redirect('learning_logs:claims')
+        ClaimRecord.objects.create(
+            claimid=new_id,
+            vehicleid=vehicleid,
+            claimstatus="Pending",
+            description=description,
+            claimamount=claimamount,
+            claimdate=str(date.today())
+        )
 
-            elif action == 'next':
-                data['claim_amount'] = float(data['claim_amount'])
-                request.session['claim_data'] = data
+        return redirect('learning_logs:claims')
 
-                return redirect('learning_logs:upload_documents')
-
-    else:
-        form = ClaimForm()
-
-    return render(request, 'learning_logs/new_claim.html', {'form': form})
+    return render(request, 'learning_logs/new_claim.html')
 
 @login_required
 def claim_detail(request, claim_id):
-    claim = Claim.objects.get(id=claim_id)
-    previous_claims = Claim.objects.filter(vin=claim.vin).exclude(id=claim.id)
-    
+    claim = get_object_or_404(ClaimRecord, claimid=claim_id)
+
+    previous_claims = ClaimRecord.objects.filter(vehicleid=claim.vehicleid).exclude(claimid=claim.claimid)
+
+    #These fields do not exist in the old table. Here, they are supplemented at the presentation layer first.
+    policy_number = f"CLM-2025-{claim.claimid:05d}"
+    vin_display = f"Vehicle-{claim.vehicleid}"
+    claim_level = "Under 1500" if (claim.claimamount or 0) < 1500 else "1500+"
+
     risk_flags = {
-    "high_amount": claim.claim_amount > 1500,
-    "many_claims": previous_claims.count() >= 2,
-    "previous_claims": previous_claims,
+        "high_amount": (claim.claimamount or 0) > 1500,
+        "many_claims": previous_claims.count() >= 2,
+        "previous_claims": previous_claims,
     }
 
-    return render(request, 'learning_logs/claim_detail.html', {
-        'claim': claim,
-        'risk': risk_flags
-    })
+    context = {
+        "claim": claim,
+        "risk": risk_flags,
+        "policy_number": policy_number,
+        "vin_display": vin_display,
+        "claim_level": claim_level,
+    }
 
+    return render(request, 'learning_logs/claim_detail.html', context)
 
 @login_required
-def update_claim_status(request, claim_id, status):
-    claim = Claim.objects.get(id=claim_id)
-    claim.status = status
+def update_claim_status(request, claim_id, action):
+    claim = get_object_or_404(ClaimRecord, claimid=claim_id)
+
+    if action == "approve":
+        claim.claimstatus = "Approved"
+    elif action == "reject":
+        claim.claimstatus = "Denied"
+    elif action == "request_info":
+        claim.claimstatus = "Pending"
+
     claim.save()
-    return redirect('learning_logs:claim_detail', claim_id=claim.id)
+
+    return redirect('learning_logs:claim_detail', claim_id=claim_id)
 
 @login_required
 def upload_documents(request):
@@ -451,7 +467,7 @@ def submit_claim(request):
 
 @login_required
 def delete_claim(request, claim_id):
-    claim = get_object_or_404(Claim, id=claim_id)
+    claim = get_object_or_404(ClaimRecord, claimid=claim_id)
 
     claim.delete()
 

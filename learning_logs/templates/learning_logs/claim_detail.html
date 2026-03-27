@@ -2,140 +2,131 @@
 
 {% block content %}
 
-<div class="max-w-5xl mx-auto">
+<div class="max-w-6xl mx-auto py-6">
 
-    <!-- HEADER -->
-    <h2 class="text-2xl font-semibold mb-1">
-        Claim #{{ claim.id }}
-        <span class="ml-2 px-3 py-1 text-sm rounded-full bg-orange-100 text-orange-600">
-            {{ claim.status }}
-        </span>
-    </h2>
-    <p class="text-gray-500 mb-6">Claim Review</p>
+    <!-- Header -->
+    <div class="mb-6">
+        <h2 class="text-3xl font-bold text-slate-900 flex items-center gap-3">
+            Claim #{{ claim.claimid }}
+            <span class="px-4 py-1 text-sm rounded-full font-semibold
+                {% if claim.claimstatus == 'Approved' %}
+                    bg-green-100 text-green-700
+                {% elif claim.claimstatus == 'Denied' %}
+                    bg-red-100 text-red-700
+                {% else %}
+                    bg-yellow-100 text-yellow-700
+                {% endif %}
+            ">
+                {{ claim.claimstatus }}            
+            </span>
+        </h2>
+        <p class="text-slate-500 mt-1 text-lg">Claim Review</p>
+    </div>
 
-    <!-- CLAIM INFO CARD -->
-    <div class="bg-white shadow-md rounded-xl p-6 mb-6">
+    <!-- Claim Information -->
+    <div class="bg-white shadow-md rounded-2xl p-6 mb-6 border border-slate-200">
+        <h3 class="text-2xl font-semibold text-slate-900 mb-8">Claim Information</h3>
 
-        <h3 class="text-lg font-semibold mb-4">Claim Information</h3>
-
-        <div class="grid grid-cols-2 gap-6">
-
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-8">
             <div>
-                <p class="text-gray-500 text-sm">Policy Number</p>
-                <p class="font-semibold">{{ claim.policy_number }}</p>
+                <p class="text-sm text-slate-500">Policy Number</p>
+                <p class="text-2xl font-semibold text-slate-900">{{ policy_number }}</p>
             </div>
 
             <div>
-                <p class="text-gray-500 text-sm">VIN</p>
-                <p class="font-semibold">{{ claim.vin }}</p>
+                <p class="text-sm text-slate-500">VIN</p>
+                <p class="text-2xl font-semibold text-slate-900">{{ vin_display }}</p>
             </div>
 
             <div>
-                <p class="text-gray-500 text-sm">Claim Amount</p>
-                <p class="font-semibold text-lg">${{ claim.claim_amount }}</p>
+                <p class="text-sm text-slate-500">Claim Amount</p>
+                <p class="text-2xl font-semibold text-slate-900">${{ claim.claimamount|floatformat:2 }}</p>
             </div>
 
             <div>
-                <p class="text-gray-500 text-sm">Claim Level</p>
-                <p class="font-semibold 
-                    {% if claim.claim_amount > 1500 %}text-red-600{% else %}text-green-600{% endif %}">
-                    {{ claim.get_claim_level_display }}
-                </p>
+                <p class="text-sm text-slate-500">Claim Level</p>
+                <p class="text-2xl font-semibold text-green-600">{{ claim_level }}</p>
             </div>
-
         </div>
 
-        <!-- Description -->
+        <div class="mt-10">
+            <p class="text-sm text-slate-500">Description</p>
+            <p class="text-xl text-slate-900 mt-2">{{ claim.description }}</p>
+        </div>
+
+        <div class="flex flex-wrap gap-4 mt-8">
+            {% if claim.claimstatus != 'Approved' %}
+            <a href="{% url 'learning_logs:update_claim_status' claim.claimid 'approve' %}"
+               class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
+                Approve
+            </a>
+            {% endif %}
+
+            {% if claim.claimstatus != 'Denied' %}
+            <a href="{% url 'learning_logs:update_claim_status' claim.claimid 'reject' %}"
+               class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition">
+                Reject
+            </a>
+            {% endif %}
+
+            {% if claim.claimstatus != 'Pending' %}
+            <a href="{% url 'learning_logs:update_claim_status' claim.claimid 'request_info' %}"
+               class="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition">
+                Request Info
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Risk Assessment -->
+    <div class="bg-white shadow-md rounded-2xl p-6 mb-6 border border-slate-200">
+        <h3 class="text-2xl font-semibold text-slate-900 mb-6">Risk Assessment</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-slate-50 rounded-xl p-6">
+                <p class="text-sm text-slate-500">Claim Amount</p>
+                <p class="text-3xl font-bold text-slate-900">${{ claim.claimamount|floatformat:2 }}</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-6">
+                <p class="text-sm text-slate-500">Previous Claims (VIN)</p>
+                <p class="text-3xl font-bold text-slate-900">{{ risk.previous_claims.count }}</p>
+            </div>
+        </div>
+
         <div class="mt-6">
-            <p class="text-gray-500 text-sm">Description</p>
-            <p class="mt-1">{{ claim.description }}</p>
+            {% if risk.high_amount %}
+                <p class="text-red-600 font-semibold">⚠ High Claim Amount</p>
+            {% endif %}
+
+            {% if risk.many_claims %}
+                <p class="text-red-600 font-semibold mt-1">⚠ Multiple Previous Claims</p>
+            {% endif %}
+
+            {% if not risk.high_amount and not risk.many_claims %}
+                <p class="text-green-600 font-semibold">✔ Low Risk</p>
+            {% endif %}
         </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="flex space-x-4 mt-6">
-
-            <a href="{% url 'learning_logs:update_claim_status' claim.id 'APPROVED' %}"
-               class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-               Approve
-            </a>
-
-            <a href="{% url 'learning_logs:update_claim_status' claim.id 'REJECTED' %}"
-               class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-               Reject
-            </a>
-
-            <a href="{% url 'learning_logs:update_claim_status' claim.id 'MORE_INFO' %}"
-               class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
-               Request Info
-            </a>
-
-        </div>
-
     </div>
 
-    <!-- RISK ASSESSMENT -->
-    <div class="bg-white shadow-md rounded-xl p-6 mb-6">
+    <!-- Claim History -->
+    <div class="bg-white shadow-md rounded-2xl p-6 border border-slate-200">
+        <h3 class="text-2xl font-semibold text-slate-900 mb-6">Claim History for VIN</h3>
 
-        <h3 class="text-lg font-semibold mb-4">Risk Assessment</h3>
-
-        <div class="grid grid-cols-2 gap-4">
-
-            <!-- Claim Amount Risk -->
-            <div class="{% if risk.high_amount %}bg-red-100{% else %}bg-gray-100{% endif %} p-4 rounded-lg">
-                <p class="text-sm text-gray-600">Claim Amount</p>
-                <p class="font-semibold text-lg">${{ claim.claim_amount }}</p>
-
-                {% if risk.high_amount %}
-                    <p class="text-red-500 text-sm">Exceeds $1500 threshold</p>
-                {% endif %}
-            </div>
-
-            <!-- Previous Claims -->
-            <div class="{% if risk.many_claims %}bg-red-100{% else %}bg-gray-100{% endif %} p-4 rounded-lg">
-                <p class="text-sm text-gray-600">Previous Claims (VIN)</p>
-                <p class="font-semibold text-lg">{{ risk.previous_claims|length }}</p>
-
-                {% if risk.many_claims %}
-                    <p class="text-red-500 text-sm">Multiple claims detected</p>
-                {% endif %}
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- CLAIM HISTORY -->
-    <div class="bg-white shadow-md rounded-xl p-6">
-
-        <h3 class="text-lg font-semibold mb-4">Claim History for VIN</h3>
-
-        {% for c in risk.previous_claims %}
-            <div class="flex justify-between items-center border rounded-lg p-3 mb-2">
-
-                <div>
-                    <p class="font-semibold">CLM-{{ c.id }}</p>
-                    <p class="text-sm text-gray-500">{{ c.date_created }}</p>
+        {% if risk.previous_claims %}
+            <div class="space-y-4">
+                {% for prev in risk.previous_claims %}
+                <div class="border-b border-slate-200 pb-4">
+                    <p class="font-semibold text-slate-900">Claim #{{ prev.claimid }}</p>
+                    <p class="text-slate-600 mt-1">Status: {{ prev.claimstatus }}</p>
+                    <p class="text-slate-600">Amount: ${{ prev.claimamount|floatformat:2 }}</p>
+                    <p class="text-slate-600">Date: {{ prev.claimdate }}</p>
                 </div>
-
-                <div>
-                    <span class="px-2 py-1 rounded text-sm
-                        {% if c.status == 'APPROVED' %}bg-green-100 text-green-600
-                        {% elif c.status == 'REJECTED' %}bg-red-100 text-red-600
-                        {% else %}bg-yellow-100 text-yellow-600{% endif %}">
-                        {{ c.status }}
-                    </span>
-                </div>
-
-                <div class="font-semibold">
-                    ${{ c.claim_amount }}
-                </div>
-
+                {% endfor %}
             </div>
-
-        {% empty %}
-            <p class="text-gray-500">No previous claims found.</p>
-        {% endfor %}
-
+        {% else %}
+            <p class="text-slate-500">No previous claims found.</p>
+        {% endif %}
     </div>
 
 </div>
