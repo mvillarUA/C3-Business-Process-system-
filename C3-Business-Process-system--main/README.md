@@ -1,8 +1,0 @@
-Instructions if not working:
-1- make sure lab 03 FOLDER from labs is in same folder and run following commands in prompt 
-pip install django
-python manage.py migrate
-python manage.py runserver
-if haven't created a account or access use this before running server in Prompt as well
-python manage.py createsuperuser
-and follow intructions to create account and run server
