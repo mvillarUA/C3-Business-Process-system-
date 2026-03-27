@@ -185,3 +185,18 @@ class ClaimForm(forms.ModelForm):
     ],
     default='SCHEDULED'
 )
+
+class ClaimRecord(models.Model):
+    claimid = models.IntegerField(db_column='claimID', primary_key=True)
+    vehicleid = models.IntegerField(db_column='vehicleID', blank=True, null=True)
+    claimstatus = models.TextField(db_column='claimStatus', blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    claimamount = models.FloatField(db_column='claimAmount', blank=True, null=True)
+    claimdate = models.TextField(db_column='claimDate', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Claim'
+
+    def __str__(self):
+        return f"Claim {self.claimid}"

@@ -17,16 +17,19 @@ from .models import Inventory
 available_count = Inventory.objects.filter(quantity__gt=5).count()
 low_count = Inventory.objects.filter(quantity__lte=5, quantity__gt=0).count()
 out_count = Inventory.objects.filter(quantity=0).count()
+from .models import ClaimRecord
 # Create your views here.
 
 @login_required
 def index(request):
     low_inventory_alerts = Inventory.objects.filter(quantity__lte=5).count()
     recent_policies_created = Warrantypolicy.objects.count()
+    pending_claims = ClaimRecord.objects.filter(claimstatus='Pending').count()
 
     context = {
         "low_inventory_alerts": low_inventory_alerts,
         "recent_policies_created": recent_policies_created,
+        "pending_claims": pending_claims,
     }
 
     return render(request, 'learning_logs/index.html', context)
