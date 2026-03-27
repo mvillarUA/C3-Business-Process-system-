@@ -26,7 +26,6 @@
                 <th>Level</th>
                 <th>Status</th>
                 <th>Date</th>
-                <th>Action</th> 
             </tr>
         </thead>
         <tbody>
@@ -41,46 +40,15 @@
                 <td>{{ claim.get_claim_level_display }}</td>
                 <td>{{ claim.status }}</td>
                 <td>{{ claim.date_created }}</td>
-
-                
-                <td class="space-x-2">
-
-                    
-                    <a href="{% url 'learning_logs:claim_detail' claim.id %}"
-                       class="text-blue-600 hover:underline">
-                        View
-                    </a>
-
-                    
-                    <form action="{% url 'learning_logs:delete_claim' claim.id %}" 
-                          method="post" 
-                          style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit"
-                            class="text-red-600 hover:underline"
-                            onclick="return confirm('Delete this claim?');">
-                            Delete
-                        </button>
-                    </form>
-
-                </td>
             </tr>
-
+            
             {% empty %}
             <tr>
-                <td colspan="6" class="text-center py-4 text-gray-500">
-                    No claims submitted.
-                </td>
+                <td colspan="5">No claims submitted.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-</div>
-<div class="flex justify-start mt-6">
-    <a href="{% url 'learning_logs:index' %}" 
-       class="bg-gray-100 text-gray-700 px-10 py-4 rounded-xl text-lg shadow-sm hover:bg-gray-200 transition">
-        Back to Dashboard
-    </a>
 </div>
 
 {% endblock %}

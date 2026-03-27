@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import (
-    Topic, Entry, Warrantypolicy, Vehicle,
+    Topic, Entry, Warrantypolicy, Vehicle, Claim,
     Customer, Dealership
 )
-from .forms import TopicForm, EntryForm, NewSaleForm
+from .forms import TopicForm, EntryForm, NewSaleForm, ClaimForm
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from io import BytesIO
 import base64
 import matplotlib
@@ -113,7 +114,11 @@ def edit_entry(request, entry_id):
 
 @login_required
 def claims(request):
-    return render(request, "learning_logs/claims.html")
+    claims = Claim.objects.all() 
+
+    return render(request, 'learning_logs/claims.html', {
+        'claims': claims
+    })
 
 
 @login_required
@@ -229,6 +234,11 @@ def new_sale(request):
     return render(request, 'learning_logs/new_sale.html', {'form': form})
 
 @login_required
+def inventory(request):
+    return render(request, "learning_logs/inventory.html")
+
+
+@login_required
 def inventory_list(request):
     items = Inventory.objects.all().order_by('partname')
 
@@ -282,7 +292,7 @@ def inventory_list(request):
     buffer.close()
     plt.close()
 
-    # ===== Bar Chart =====
+    
     fig2, ax2 = plt.subplots(figsize=(5, 4))
 
     categories = ['Available', 'Low', 'Out']
@@ -331,3 +341,114 @@ def new_inventory(request):
         return redirect('learning_logs:inventory_list')
 
     return render(request, 'learning_logs/new_inventory.html')
+
+@login_required
+def new_claim(request):
+    if request.method == 'POST':
+        form = ClaimForm(request.POST)
+
+        if form.is_valid():
+            action = request.POST.get('action')
+            data = form.cleaned_data
+
+            if action == 'draft':
+                Claim.objects.create(
+                    policy_number=data['policy_number'],
+                    vin=data['vin'],
+                    claim_amount=data['claim_amount'],
+                    description=data.get('description', ''),
+                    title=data.get('title', ''),
+                    status='DRAFT'
+                )
+
+                return redirect('learning_logs:claims')
+
+            elif action == 'next':
+                data['claim_amount'] = float(data['claim_amount'])
+                request.session['claim_data'] = data
+
+                return redirect('learning_logs:upload_documents')
+
+    else:
+        form = ClaimForm()
+
+    return render(request, 'learning_logs/new_claim.html', {'form': form})
+
+@login_required
+def claim_detail(request, claim_id):
+    claim = Claim.objects.get(id=claim_id)
+    previous_claims = Claim.objects.filter(vin=claim.vin).exclude(id=claim.id)
+    
+    risk_flags = {
+    "high_amount": claim.claim_amount > 1500,
+    "many_claims": previous_claims.count() >= 2,
+    "previous_claims": previous_claims,
+    }
+
+    return render(request, 'learning_logs/claim_detail.html', {
+        'claim': claim,
+        'risk': risk_flags
+    })
+
+
+@login_required
+def update_claim_status(request, claim_id, status):
+    claim = Claim.objects.get(id=claim_id)
+    claim.status = status
+    claim.save()
+    return redirect('learning_logs:claim_detail', claim_id=claim.id)
+
+@login_required
+def upload_documents(request):
+    if request.method == 'POST':
+        file = request.FILES.get('attachment')
+
+        if file:
+            request.session['attachment'] = file.name
+
+            with open(f'media/claims/{file.name}', 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+
+        return redirect('learning_logs:review_claim')
+
+    return render(request, 'learning_logs/upload.html')
+
+@login_required
+def review_claim(request):
+    claim_data = request.session.get('claim_data')
+    attachment = request.session.get('attachment')
+
+    return render(request, 'learning_logs/review.html', {
+        'claim': claim_data,
+        'attachment': attachment
+    })
+
+@login_required
+def submit_claim(request):
+    data = request.session.get('claim_data')
+    attachment = request.session.get('attachment')
+
+    if data:
+        claim = Claim.objects.create(
+            policy_number=data['policy_number'],
+            vin=data['vin'],
+            claim_amount=data['claim_amount'],
+            description=data.get('description', ''),
+            title=data.get('title', ''),
+            status='SUBMITTED'
+        )
+
+        request.session.flush()
+
+        return redirect('learning_logs:claims')
+
+    return redirect('learning_logs:new_claim')
+
+@login_required
+def delete_claim(request, claim_id):
+    claim = get_object_or_404(Claim, id=claim_id)
+
+    claim.delete()
+
+    return redirect('learning_logs:claims')

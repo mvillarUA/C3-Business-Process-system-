@@ -1,5 +1,5 @@
 from django import forms
-from .models import Topic, Entry, Dealership, Inventory
+from .models import Topic, Entry, Dealership, Inventory, Claim
 
 class TopicForm(forms.ModelForm):
     class Meta:
@@ -133,3 +133,16 @@ class NewSaleForm(forms.Form):
         'class': 'w-full rounded border border-gray-300 bg-gray-50 px-3 py-2'
     })
     )
+
+class ClaimForm(forms.ModelForm):
+    class Meta:
+        model = Claim
+        fields = ['policy_number', 'vin', 'description', 'claim_amount']
+
+def clean_policy_number(self):
+    policy = self.cleaned_data['policy_number']
+    
+    if not policy.isdigit():
+        raise forms.ValidationError("Policy number must be numeric")
+    
+    return policy

@@ -1,0 +1,38 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-6">Review Claim</h2>
+
+    <!-- Tabs -->
+    <div class="flex space-x-6 border-b mb-6">
+        <span>Documents</span>
+        <span>Upload</span>
+        <span class="border-b-2 border-blue-600 text-blue-600">Review</span>
+        <span>Submit</span>
+    </div>
+
+    <div class="bg-white shadow-md rounded-xl p-6">
+
+        <h3 class="font-semibold mb-4">Claim Details</h3>
+
+        <p><strong>Policy:</strong> {{ claim.policy_number }}</p>
+        <p><strong>VIN:</strong> {{ claim.vin }}</p>
+        <p><strong>Amount:</strong> ${{ claim.claim_amount }}</p>
+        <p><strong>Description:</strong> {{ claim.description }}</p>
+
+        <h3 class="font-semibold mt-4">Attachment</h3>
+        <p>{{ attachment }}</p>
+
+        <div class="mt-6">
+            <a href="{% url 'learning_logs:submit_claim' %}"
+               class="bg-green-600 text-white px-6 py-2 rounded">
+               Submit Claim
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

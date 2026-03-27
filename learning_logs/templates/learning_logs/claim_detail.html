@@ -1,0 +1,143 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto">
+
+    <!-- HEADER -->
+    <h2 class="text-2xl font-semibold mb-1">
+        Claim #{{ claim.id }}
+        <span class="ml-2 px-3 py-1 text-sm rounded-full bg-orange-100 text-orange-600">
+            {{ claim.status }}
+        </span>
+    </h2>
+    <p class="text-gray-500 mb-6">Claim Review</p>
+
+    <!-- CLAIM INFO CARD -->
+    <div class="bg-white shadow-md rounded-xl p-6 mb-6">
+
+        <h3 class="text-lg font-semibold mb-4">Claim Information</h3>
+
+        <div class="grid grid-cols-2 gap-6">
+
+            <div>
+                <p class="text-gray-500 text-sm">Policy Number</p>
+                <p class="font-semibold">{{ claim.policy_number }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">VIN</p>
+                <p class="font-semibold">{{ claim.vin }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">Claim Amount</p>
+                <p class="font-semibold text-lg">${{ claim.claim_amount }}</p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">Claim Level</p>
+                <p class="font-semibold 
+                    {% if claim.claim_amount > 1500 %}text-red-600{% else %}text-green-600{% endif %}">
+                    {{ claim.get_claim_level_display }}
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Description -->
+        <div class="mt-6">
+            <p class="text-gray-500 text-sm">Description</p>
+            <p class="mt-1">{{ claim.description }}</p>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex space-x-4 mt-6">
+
+            <a href="{% url 'learning_logs:update_claim_status' claim.id 'APPROVED' %}"
+               class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+               Approve
+            </a>
+
+            <a href="{% url 'learning_logs:update_claim_status' claim.id 'REJECTED' %}"
+               class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+               Reject
+            </a>
+
+            <a href="{% url 'learning_logs:update_claim_status' claim.id 'MORE_INFO' %}"
+               class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+               Request Info
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- RISK ASSESSMENT -->
+    <div class="bg-white shadow-md rounded-xl p-6 mb-6">
+
+        <h3 class="text-lg font-semibold mb-4">Risk Assessment</h3>
+
+        <div class="grid grid-cols-2 gap-4">
+
+            <!-- Claim Amount Risk -->
+            <div class="{% if risk.high_amount %}bg-red-100{% else %}bg-gray-100{% endif %} p-4 rounded-lg">
+                <p class="text-sm text-gray-600">Claim Amount</p>
+                <p class="font-semibold text-lg">${{ claim.claim_amount }}</p>
+
+                {% if risk.high_amount %}
+                    <p class="text-red-500 text-sm">Exceeds $1500 threshold</p>
+                {% endif %}
+            </div>
+
+            <!-- Previous Claims -->
+            <div class="{% if risk.many_claims %}bg-red-100{% else %}bg-gray-100{% endif %} p-4 rounded-lg">
+                <p class="text-sm text-gray-600">Previous Claims (VIN)</p>
+                <p class="font-semibold text-lg">{{ risk.previous_claims|length }}</p>
+
+                {% if risk.many_claims %}
+                    <p class="text-red-500 text-sm">Multiple claims detected</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CLAIM HISTORY -->
+    <div class="bg-white shadow-md rounded-xl p-6">
+
+        <h3 class="text-lg font-semibold mb-4">Claim History for VIN</h3>
+
+        {% for c in risk.previous_claims %}
+            <div class="flex justify-between items-center border rounded-lg p-3 mb-2">
+
+                <div>
+                    <p class="font-semibold">CLM-{{ c.id }}</p>
+                    <p class="text-sm text-gray-500">{{ c.date_created }}</p>
+                </div>
+
+                <div>
+                    <span class="px-2 py-1 rounded text-sm
+                        {% if c.status == 'APPROVED' %}bg-green-100 text-green-600
+                        {% elif c.status == 'REJECTED' %}bg-red-100 text-red-600
+                        {% else %}bg-yellow-100 text-yellow-600{% endif %}">
+                        {{ c.status }}
+                    </span>
+                </div>
+
+                <div class="font-semibold">
+                    ${{ c.claim_amount }}
+                </div>
+
+            </div>
+
+        {% empty %}
+            <p class="text-gray-500">No previous claims found.</p>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
