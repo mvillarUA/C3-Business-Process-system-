@@ -147,12 +147,13 @@ def view_sales(request):
     ax.pie(
     sizes,
     labels=labels,
-    autopct=None,             
+    autopct='%1.0f%%',            
     startangle=90,
     colors=["#D7F2FC", "#FAF4D3", "#E5E2F7"],
-    labeldistance=0.4         
+    wedgeprops={'edgecolor': 'white'},
+    textprops={'fontsize': 8}         
     )
-    ax.set_title("Policies by Coverage Type")
+    ax.set_title("Inventory Status", fontsize=12, weight='bold')
 
     buffer = BytesIO()
     plt.savefig(buffer, format='png', dpi=300, bbox_inches='tight')
