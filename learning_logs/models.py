@@ -73,10 +73,10 @@ class Vehicle(models.Model):
         blank=True,
         null=True
     )
-    model = models.TextField(blank=True, null=True)
+    model = models.TextField(max_length= 100)
     year = models.IntegerField(blank=True, null=True)
-    mileage = models.TextField(blank=True, null=True)
-    vin = models.IntegerField(db_column='VIN', blank=True, null=True)
+    mileage = models.IntegerField(blank=True, null=True)
+    vin = models.CharField(max_length= 50,db_column='VIN', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -95,8 +95,8 @@ class Warrantypolicy(models.Model):
         blank=True,
         null=True
     )
-    startdate = models.TextField(db_column='startDate', blank=True, null=True)
-    enddate = models.FloatField(db_column='endDate', blank=True, null=True)
+    startdate = models.DateField(db_column='startDate', blank=True, null=True)
+    enddate = models.DateField(db_column='endDate', blank=True, null=True)
     status = models.TextField(blank=True, null=True)
     coveragetype = models.TextField(db_column='coverageType', blank=True, null=True)
 
