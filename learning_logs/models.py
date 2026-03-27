@@ -2,6 +2,8 @@ from django.db import models
 from django import forms
 from django.contrib.auth.models import User
 
+import sys
+
 # Create your models here.
 
 class Topic(models.Model):
@@ -35,6 +37,7 @@ class Dealership(models.Model):
 
     class Meta:
         managed = False
+        ##managed = 'test' in sys.argv
         db_table = 'Dealership'
 
     def __str__(self):
@@ -57,6 +60,7 @@ class Customer(models.Model):
 
     class Meta:
         managed = False
+        #managed = 'test' in sys.argv
         db_table = 'Customer'
 
     def __str__(self):
@@ -80,6 +84,7 @@ class Vehicle(models.Model):
 
     class Meta:
         managed = False
+        #managed = 'test' in sys.argv
         db_table = 'Vehicle'
 
     def __str__(self):
@@ -102,6 +107,7 @@ class Warrantypolicy(models.Model):
 
     class Meta:
         managed = False
+        #managed = 'test' in sys.argv
         db_table = 'WarrantyPolicy'
         
 
@@ -113,6 +119,7 @@ class Inventory(models.Model):
 
     class Meta:
         managed = False
+        #managed = 'test' in sys.argv
         db_table = 'Inventory'
 
     def stock_status(self):
