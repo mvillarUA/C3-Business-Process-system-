@@ -1,0 +1,45 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+<h1 class="text-2xl font-semibold mb-6">Customer Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+  <div class="bg-white p-6 rounded-xl shadow">
+    <h2 class="text-lg font-semibold mb-2">My Warranty</h2>
+    <p class="text-sm text-gray-600 mb-4">
+      View your warranty coverage and policy details.
+    </p>
+    <a href="{% url 'users:customer_warranty' %}" class="bg-blue-500 text-white px-4 py-2 rounded">
+      View Warranty
+    </a>
+  </div>
+
+
+
+  <div class="bg-white p-6 rounded-xl shadow">
+    <h2 class="text-lg font-semibold mb-2">My Claims</h2>
+    <p class="text-sm text-gray-600 mb-4">
+      Track the current status of your claims.
+    </p>
+    <a href="{% url 'users:customer_claims' %}" class="bg-blue-500 text-white px-4 py-2 rounded">
+      Track Claims
+    </a>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow">
+    <h2 class="text-lg font-semibold mb-2">Inspection</h2>
+    <p class="text-sm text-gray-600 mb-4">
+      View inspection records and appointments.
+    </p>
+    <a href="{% url 'users:customer_inspection' %}" class="bg-blue-500 text-white px-4 py-2 rounded">
+      View Inspection
+    </a>
+  </div>
+
+</div>
+
+
+
+{% endblock content %}

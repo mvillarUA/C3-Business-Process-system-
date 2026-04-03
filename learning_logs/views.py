@@ -24,6 +24,12 @@ from django.contrib import messages
 
 @login_required
 def index(request):
+    try:
+        if request.user.profile.role == 'customer':
+            return redirect('users:customer_dashboard')
+    except:
+        pass
+    
     low_inventory_alerts = Inventory.objects.filter(quantity__lte=5).count()
     recent_policies_created = Warrantypolicy.objects.count()
     pending_claims = ClaimRecord.objects.filter(claimstatus='Pending').count()

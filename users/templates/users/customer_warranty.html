@@ -1,0 +1,50 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+
+<h1 class="text-2xl font-semibold mb-6">My Warranty</h1>
+
+<div class="mb-4">
+    <a href="{% url 'users:customer_dashboard' %}"
+       class="text-blue-600 hover:underline">
+        ← Back to Dashboard
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow p-6">
+    {% if warranties %}
+        <div class="overflow-x-auto">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Policy ID</th>
+                        <th>Coverage Type</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Vehicle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for warranty in warranties %}
+                    <tr>
+                        <td>{{ warranty.policyid }}</td>
+                        <td>{{ warranty.coveragetype }}</td>
+                        <td>{{ warranty.status }}</td>
+                        <td>{{ warranty.startdate }}</td>
+                        <td>{{ warranty.enddate }}</td>
+                        <td>{{ warranty.vehicleid }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted mb-0">No warranty records found.</p>
+    {% endif %}
+</div>
+
+
+
+{% endblock content %}
