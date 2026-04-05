@@ -214,8 +214,20 @@ def new_sale(request):
             if existing_customer:
                 customer = existing_customer
             else:
-                customer_count = Customer.objects.count() + 1
-                new_customer_id = f"CUST{customer_count:03d}"
+                existing_ids = Customer.objects.values_list('customerid', flat=True)
+
+                max_num = 0
+                for cid in existing_ids:
+                    cid_str = str(cid)
+                    if cid_str.startswith("CUST"):
+                        try:
+                            num = int(cid_str.replace("CUST", ""))
+                            if num > max_num:
+                                max_num = num
+                        except ValueError:
+                            pass
+
+                new_customer_id = f"CUST{max_num + 1:03d}"
 
                 customer = Customer.objects.create(
                     customerid=new_customer_id,
@@ -226,16 +238,6 @@ def new_sale(request):
                     email=email,
                     address=address,
                 )
-
-            customer = Customer.objects.create(
-                customerid=new_customer_id,
-                dealershipid=dealership,
-                firstname=firstname,
-                lastname=lastname,
-                phone=phone,
-                email=email,
-                address=address,
-            )
 
             # Generate next vehicle ID
             next_vehicle_id = (Vehicle.objects.order_by('-vehicleid').first().vehicleid + 1) if Vehicle.objects.exists() else 1

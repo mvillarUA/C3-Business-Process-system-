@@ -38,7 +38,7 @@ def employee_register(request):
             Profile.objects.create(user=user, role='employee')
 
             login(request, user)
-            return redirect('learning_logs:index')
+            return redirect('users:login')
 
     return render(request, 'registration/employee_register.html', {'form': form})
 
@@ -93,7 +93,7 @@ def customer_register(request):
             )
 
             login(request, user)
-            return redirect('users:customer_dashboard')
+            return redirect('users:login')
 
     return render(request, 'registration/customer_register.html', {'form': form})
 
