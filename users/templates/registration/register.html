@@ -1,12 +1,24 @@
 {% extends "learning_logs/base.html" %}
 
 {% block content %}
-    
-    <form method="post" action="{% url 'users:register' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        
-        <button name="submit"class="px-4 py-2 rounded text-white"style="background-color:#1F3A8A;">Register</button>
-        <input type="hidden" name="next" value="{% url 'learning_logs:index' %}" />
-    </form>
+<div class="max-w-3xl mx-auto mt-12">
+    <div class="bg-white rounded-2xl shadow-md p-10 text-center">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Register</h2>
+        <p class="text-slate-600 mb-8">Choose the type of account you want to create.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="{% url 'users:employee_register' %}"
+               class="block rounded-xl border border-slate-200 p-8 hover:shadow-md transition bg-slate-50">
+                <h3 class="text-xl font-semibold text-slate-900 mb-2">Employee Register</h3>
+                <p class="text-slate-600">Create an employee account to access the internal management portal.</p>
+            </a>
+
+            <a href="{% url 'users:customer_register' %}"
+               class="block rounded-xl border border-slate-200 p-8 hover:shadow-md transition bg-slate-50">
+                <h3 class="text-xl font-semibold text-slate-900 mb-2">Customer Register</h3>
+                <p class="text-slate-600">Create a customer account to view warranty, claims, and inspection records.</p>
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock content %}

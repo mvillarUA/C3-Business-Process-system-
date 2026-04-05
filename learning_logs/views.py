@@ -203,9 +203,29 @@ def new_sale(request):
             status = form.cleaned_data['status']
             coveragetype = form.cleaned_data['coveragetype']
 
-            # Generate next customer ID
-            customer_count = Customer.objects.count() + 1
-            new_customer_id = f"CUST{customer_count:03d}"
+            # try to find exit customer info first, then create
+            existing_customer = Customer.objects.filter(
+                firstname__iexact=firstname,
+                lastname__iexact=lastname,
+                email__iexact=email,
+                phone=phone
+            ).first()
+
+            if existing_customer:
+                customer = existing_customer
+            else:
+                customer_count = Customer.objects.count() + 1
+                new_customer_id = f"CUST{customer_count:03d}"
+
+                customer = Customer.objects.create(
+                    customerid=new_customer_id,
+                    dealershipid=dealership,
+                    firstname=firstname,
+                    lastname=lastname,
+                    phone=phone,
+                    email=email,
+                    address=address,
+                )
 
             customer = Customer.objects.create(
                 customerid=new_customer_id,

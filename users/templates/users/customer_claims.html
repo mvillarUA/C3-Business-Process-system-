@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Claims</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+        .navbar {
+            background: white;
+            padding: 24px 60px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0b1b4d;
+        }
+        .container {
+            max-width: 1180px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+        h1 {
+            color: #0b1b4d;
+            margin-bottom: 20px;
+        }
+        a.back {
+            color: #2563eb;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #d9d9d9;
+            padding: 14px;
+            text-align: left;
+        }
+        th {
+            background: #f8fafc;
+        }
+        .empty {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="brand">C3 Dealer Portal</div>
+        <div>{{ request.user.username }}</div>
+    </div>
+
+    <div class="container">
+        <h1>My Claims</h1>
+        <a class="back" href="{% url 'users:customer_dashboard' %}">← Back to Dashboard</a>
+
+        <div class="card">
+            {% if claims %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Claim ID</th>
+                            <th>Vehicle ID</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for claim in claims %}
+                        <tr>
+                            <td>{{ claim.claimid }}</td>
+                            <td>{{ claim.vehicleid }}</td>
+                            <td>{{ claim.claimstatus }}</td>
+                            <td>{{ claim.claimamount }}</td>
+                            <td>{{ claim.claimdate }}</td>
+                            <td>{{ claim.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty">No claim records found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

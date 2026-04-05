@@ -199,3 +199,17 @@ class ClaimRecord(models.Model):
 
     def __str__(self):
         return f"Claim {self.claimid}"
+    
+class Inspection(models.Model):
+    inspectionid = models.IntegerField(db_column='inspectionID', primary_key=True)
+    claimid = models.IntegerField(db_column='claimID', blank=True, null=True)
+    inspectionresult = models.TextField(db_column='inspectionResult', blank=True, null=True)
+    inspectionemployee = models.TextField(db_column='inspectionEmployee', blank=True, null=True)
+    inspectiondate = models.TextField(db_column='inspectionDate', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Inspection'
+
+    def __str__(self):
+        return f"Inspection {self.inspectionid}"

@@ -10,6 +10,10 @@ urlpatterns = [
     # register
     
     path('register/', views.register, name='register'),
+
+    path('register/employee/', views.employee_register, name='employee_register'),
+    path('register/customer/', views.customer_register, name='customer_register'),
+
     path('logout/', views.log_out, name="logout"),
 
     path('redirect/', views.role_redirect, name='role_redirect'),

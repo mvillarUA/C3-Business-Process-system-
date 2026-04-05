@@ -1,45 +1,165 @@
 {% extends "learning_logs/base.html" %}
 
 {% block content %}
+<div class="space-y-8">
 
-<h1 class="text-2xl font-semibold mb-6">Customer Dashboard</h1>
+    <!-- Welcome Section -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900 mb-2">
+                    Welcome back, {{ request.user.username }}
+                </h1>
+                <p class="text-slate-600 text-base">
+                    Manage your warranty, claims, and inspection records.
+                </p>
+            </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="text-right">
+                <p class="text-sm text-slate-500 mb-1">Current Time</p>
+                <p id="current-time" class="text-lg font-semibold text-slate-900"></p>
+            </div>
+        </div>
+    </section>
 
-  <div class="bg-white p-6 rounded-xl shadow">
-    <h2 class="text-lg font-semibold mb-2">My Warranty</h2>
-    <p class="text-sm text-gray-600 mb-4">
-      View your warranty coverage and policy details.
-    </p>
-    <a href="{% url 'users:customer_warranty' %}" class="bg-blue-500 text-white px-4 py-2 rounded">
-      View Warranty
-    </a>
-  </div>
+    <!-- Summary Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Warranty</h2>
+                <span class="text-2xl">🛡️</span>
+            </div>
+            <p class="text-2xl font-bold text-slate-900">{{ warranty_status }}</p>
+        </div>
 
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Claims</h2>
+                <span class="text-2xl">📄</span>
+            </div>
+            <p class="text-2xl font-bold text-slate-900">{{ claim_status }}</p>
+        </div>
 
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Inspection</h2>
+                <span class="text-2xl">🔎</span>
+            </div>
+            <p class="text-2xl font-bold text-slate-900">{{ inspection_status }}</p>
+        </div>
+    </section>
 
-  <div class="bg-white p-6 rounded-xl shadow">
-    <h2 class="text-lg font-semibold mb-2">My Claims</h2>
-    <p class="text-sm text-gray-600 mb-4">
-      Track the current status of your claims.
-    </p>
-    <a href="{% url 'users:customer_claims' %}" class="bg-blue-500 text-white px-4 py-2 rounded">
-      Track Claims
-    </a>
-  </div>
+    <!-- Main Modules -->
+    <section>
+        <div class="mb-4">
+            <h2 class="text-2xl font-bold text-slate-900">Customer Dashboard</h2>
+        </div>
 
-  <div class="bg-white p-6 rounded-xl shadow">
-    <h2 class="text-lg font-semibold mb-2">Inspection</h2>
-    <p class="text-sm text-gray-600 mb-4">
-      View inspection records and appointments.
-    </p>
-    <a href="{% url 'users:customer_inspection' %}" class="bg-blue-500 text-white px-4 py-2 rounded">
-      View Inspection
-    </a>
-  </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Warranty -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-7 hover:shadow-lg transition">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-2">My Warranty</h3>
+                        <p class="text-slate-600">Review policy details and coverage.</p>
+                    </div>
+                    <div class="text-3xl">🛡️</div>
+                </div>
+
+                <a href="{% url 'users:customer_warranty' %}"
+                   class="inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-white font-medium hover:bg-blue-700 transition">
+                    View Warranty
+                </a>
+            </div>
+
+            <!-- Claims -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-7 hover:shadow-lg transition">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-2">My Claims</h3>
+                        <p class="text-slate-600">Check claim status and history.</p>
+                    </div>
+                    <div class="text-3xl">📑</div>
+                </div>
+
+                <a href="{% url 'users:customer_claims' %}"
+                   class="inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-white font-medium hover:bg-blue-700 transition">
+                    Track Claims
+                </a>
+            </div>
+
+            <!-- Inspection -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-7 hover:shadow-lg transition md:col-span-2">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-2">Inspection</h3>
+                        <p class="text-slate-600">View inspection results and records.</p>
+                    </div>
+                    <div class="text-3xl">🔧</div>
+                </div>
+
+                <a href="{% url 'users:customer_inspection' %}"
+                   class="inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-white font-medium hover:bg-blue-700 transition">
+                    View Inspection
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Activity / Help -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 class="text-xl font-bold text-slate-900 mb-4">Recent Activity</h3>
+            <ul class="space-y-4 text-slate-700">
+                <li class="flex items-start gap-3">
+                    <span class="mt-1">•</span>
+                    <span>Your dashboard is connected to your customer profile and warranty records.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="mt-1">•</span>
+                    <span>Claims and inspections can be viewed once they are added by the dealership system.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="mt-1">•</span>
+                    <span>You can return anytime to monitor updates in real time.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 class="text-xl font-bold text-slate-900 mb-4">Need Help?</h3>
+            <p class="text-slate-600 mb-4">
+                If your policy, claim, or inspection information looks incomplete, please contact the dealership for verification.
+            </p>
+
+            <div class="space-y-3 text-slate-700">
+                <div class="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3">
+                    <span class="font-medium">Support:</span> C3 Dealer Portal Assistance
+                </div>
+                <div class="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3">
+                    <span class="font-medium">Access:</span> Customer records are updated based on dealership entries
+                </div>
+            </div>
+        </div>
+    </section>
+
+<script>
+    function updateTime() {
+        const now = new Date();
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        document.getElementById('current-time').textContent =
+            now.toLocaleString('en-CA', options);
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+</script>
 
 </div>
-
-
-
 {% endblock content %}
