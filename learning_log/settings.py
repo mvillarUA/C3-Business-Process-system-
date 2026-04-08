@@ -130,3 +130,13 @@ LOGOUT_REDIRECT_URL = 'users:login'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+import sys
+if 'test' in sys.argv:
+    class DisableMigrations:
+        def __contains__(self, item): return True
+        def __getitem__(self, item): return None
+
+    MIGRATION_MODULES = DisableMigrations()
+    
+    TEST_RUNNER = 'learning_logs.tests.ManagedModelTestRunner'

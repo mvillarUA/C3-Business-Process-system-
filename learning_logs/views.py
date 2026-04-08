@@ -14,9 +14,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from collections import Counter
 from .models import Inventory
-available_count = Inventory.objects.filter(quantity__gt=5).count()
-low_count = Inventory.objects.filter(quantity__lte=5, quantity__gt=0).count()
-out_count = Inventory.objects.filter(quantity=0).count()
 from .models import ClaimRecord
 from datetime import date
 from django.contrib import messages
