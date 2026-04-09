@@ -18,11 +18,12 @@ urlpatterns = [
     path('inventory/', views.inventory_list, name='inventory_list'),
     path('inventory/new/', views.new_inventory, name='new_inventory'),
     path('claims/new/', views.new_claim, name='new_claim'),
-    path("inventory/", views.inventory, name="inventory"),
     path('claims/<int:claim_id>/update/<str:action>/', views.update_claim_status, name='update_claim_status'),
     path('claims/<int:claim_id>/', views.claim_detail, name='claim_detail'),
     path('claims/upload/', views.upload_documents, name='upload_documents'),
     path('claims/review/', views.review_claim, name='review_claim'),
     path('claims/submit/', views.submit_claim, name='submit_claim'),
-    path('claims/<int:claim_id>/delete/', views.delete_claim, name='delete_claim')
+    path('claims/<int:claim_id>/delete/', views.delete_claim, name='delete_claim'),
+    path('inventory/<int:item_id>/update/', views.update_inventory_item, name='update_inventory_item'),
+    path('inventory/<int:item_id>/delete/', views.delete_inventory_item, name='delete_inventory_item'),
 ]

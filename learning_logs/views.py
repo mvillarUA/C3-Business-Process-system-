@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import (
     Topic, Entry, Warrantypolicy, Vehicle, Claim,
@@ -6,7 +6,6 @@ from .models import (
 )
 from .forms import TopicForm, EntryForm, NewSaleForm, ClaimForm
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect
 from io import BytesIO
 import base64
 import matplotlib
@@ -20,6 +19,7 @@ out_count = Inventory.objects.filter(quantity=0).count()
 from .models import ClaimRecord
 from datetime import date
 from django.contrib import messages
+from django.db import IntegrityError
 # Create your views here.
 
 @login_required
@@ -500,3 +500,46 @@ def delete_claim(request, claim_id):
     claim.delete()
 
     return redirect('learning_logs:claims')
+
+@login_required
+def update_inventory_item(request, item_id):
+    item = get_object_or_404(Inventory, partid=item_id)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        amount = request.POST.get('amount')
+
+        try:
+            amount = int(amount)
+        except (TypeError, ValueError):
+            amount = 0
+
+        if amount < 1:
+            return redirect('learning_logs:inventory_list')
+
+        current_qty = int(item.quantity) if item.quantity is not None else 0
+
+        if action == 'add':
+            item.quantity = current_qty + amount
+        elif action == 'reduce':
+            item.quantity = max(0, current_qty - amount)
+
+        item.save()
+
+    return redirect('learning_logs:inventory_list')
+
+@login_required
+def delete_inventory_item(request, item_id):
+    item = get_object_or_404(Inventory, partid=item_id)
+
+    if request.method == 'POST':
+        try:
+            item.delete()
+            messages.success(request, f"{item.partname} was deleted successfully.")
+        except IntegrityError:
+            messages.error(
+                request,
+                f"{item.partname} cannot be deleted because it is linked to other records."
+            )
+
+    return redirect('learning_logs:inventory_list')
